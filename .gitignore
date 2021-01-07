@@ -1,0 +1,8 @@
+# VSCode auto-generated directory
+.vscode/
+
+# Binary executables
+*.out
+
+# Test code/scripts
+src/tests/
