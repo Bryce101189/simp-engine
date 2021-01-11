@@ -4,7 +4,20 @@
 typedef struct 
 {
     void* sdl_window;   // void* rather than an SDL_Window* to avoid needing to include SDL.h in this header, junking it up
+    unsigned char* eventStatus;
 } Simp_Window;
+
+typedef enum
+{
+    SIMP_WINDOWEVENT_NONE,
+    
+    SIMP_WINDOWEVENT_CLOSE,     // Request to close the window was sent
+    
+    SIMP_WINDOWEVENT_RESIZED,    // Window was resized
+    SIMP_WINDOWEVENT_MOVED,      // Window was moved
+    
+    SIMP_WINDOWEVENT_TOTAL,     // Amount of events
+} Simp_WindowEvent;
 
 /*
     Creates a window.
@@ -39,5 +52,77 @@ Simp_Window* Simp_CreateWindowAtPosition(const char* title, int x, int y, int wi
         - Simp_Window* window: Window to destroy.
 */
 void Simp_DestroyWindow(Simp_Window* window);
+
+/*
+    Moves the window to a specified position on the screen.
+
+    Args:
+        - Simp_Window* window: The window to be moved.
+        - int x: Desired x position of the window.
+        - int y: Desired y position of the window.
+*/
+void Simp_SetWindowPosition(Simp_Window* window, int x, int y);
+
+/*
+    Resized the window to a specified width and height.
+
+    Args:
+        - Simp_Window* window: The window to be resized.
+        - int width: Desired width of the window.
+        - int height: Desired height of the window.
+*/
+void Simp_SetWindowSize(Simp_Window *window, int width, int height);
+
+/*
+    Moves and resizes the window to match the position and dimensions a rect.
+
+    Args:
+        - Simp_Window* window: The window to be repositioned and resized.
+        - Simp_Rect: The rect containing the new position and dimensions.
+*/
+void Simp_SetWindowRect(Simp_Window *window, Simp_Rect rect);
+
+/*
+    Sets whether or not the window can be resized by the user.
+
+    Args:
+        - Simp_Window* window: The window to modify.
+        - int resizeable: Whether or not the window should be made resizable. 0 for false, else true.
+*/
+void Simp_SetWindowResizeable(Simp_Window* window, int resizeable);
+
+/*
+    Sets whether or not the window should be in fullscreen mode.
+
+    Args:
+        - Simp_Window* window: The window to modify.
+        - int resizeable: Whether or not the window should be in fullscreen mode. 0 for false, else true.
+*/
+void Simp_SetWindowFullscreen(Simp_Window* window, int fullscreen);
+
+/*
+    Sets whether or not the window should have a border.
+
+    Args:
+        - Simp_Window* window: The window to modify.
+        - int resizeable: Whether or not the window should have a border. 0 for false, else true.
+*/
+void Simp_SetWindowBordered(Simp_Window* window, int bordered);
+
+/*
+    Returns the position and dimensions of a given window in the form of a Simp_Rect.
+*/
+Simp_Rect Simp_GetWindowRect(Simp_Window* window);
+
+/*
+    Polls all window events and returns the status of a given event.
+
+    Args:
+        - Simp_Window* window: Window to poll events from.
+        - Simp_WindowEvent event: The event you would like to check.
+
+    Returns the status of the event you would like to check.
+*/
+unsigned char Simp_GetWindowEventStatus(Simp_Window* window, Simp_WindowEvent event);
 
 #endif

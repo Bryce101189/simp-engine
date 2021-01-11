@@ -1,6 +1,8 @@
 #ifndef __SIMP_H__
 #define __SIMP_H__
 
+#include "simp_types.h"
+#include "simp_window.h"
 #include "simp_error.h"
 
 /*
