@@ -197,28 +197,28 @@ typedef struct
 {
     const char* string;
     void* next;
-} _LinkedString;
+} LinkedString;
 
-_LinkedString* _errors = NULL;
+static LinkedString* errors = NULL;
 
 void Simp_SetError(const char* errorMessage)
 {
-    _LinkedString* newError = malloc(sizeof(_LinkedString));
+    LinkedString* newError = malloc(sizeof(LinkedString));
 
     newError->string = errorMessage;
-    newError->next = _errors;
+    newError->next = errors;
     
-    _errors = newError;
+    errors = newError;
 }
 
 const char* Simp_GetError(void)
 {
-    if(_errors == NULL)
+    if(errors == NULL)
         return NULL;
 
-    _LinkedString* error = _errors;
+    LinkedString* error = errors;
     const char* errorMessage = error->string;
-    _errors = error->next;
+    errors = error->next;
     free(error);
     
     return errorMessage;
@@ -227,10 +227,10 @@ const char* Simp_GetError(void)
 int Simp_FreeErrors(void)
 {
     int i = 0;
-    while(_errors != NULL)
+    while(errors != NULL)
     {
-        _LinkedString* error = _errors;
-        _errors = error->next;
+        LinkedString* error = errors;
+        errors = error->next;
         free(error);
         ++i;
     }
