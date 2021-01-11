@@ -1,6 +1,8 @@
 #ifndef __SIMP_WINDOW_H__
 #define __SIMP_WINDOW_H__
 
+#include <stdbool.h>
+
 typedef struct 
 {
     void* sdl_window;   // void* rather than an SDL_Window* to avoid needing to include SDL.h in this header, junking it up
@@ -87,27 +89,27 @@ void Simp_SetWindowRect(Simp_Window *window, Simp_Rect rect);
 
     Args:
         - Simp_Window* window: The window to modify.
-        - int resizeable: Whether or not the window should be made resizable. 0 for false, else true.
+        - bool resizeable: Whether or not the window should be made resizable.
 */
-void Simp_SetWindowResizeable(Simp_Window* window, int resizeable);
+void Simp_SetWindowResizeable(Simp_Window* window, bool resizeable);
 
 /*
     Sets whether or not the window should be in fullscreen mode.
 
     Args:
         - Simp_Window* window: The window to modify.
-        - int resizeable: Whether or not the window should be in fullscreen mode. 0 for false, else true.
+        - bool fullscreen: Whether or not the window should be in fullscreen mode.
 */
-void Simp_SetWindowFullscreen(Simp_Window* window, int fullscreen);
+void Simp_SetWindowFullscreen(Simp_Window* window, bool fullscreen);
 
 /*
     Sets whether or not the window should have a border.
 
     Args:
         - Simp_Window* window: The window to modify.
-        - int resizeable: Whether or not the window should have a border. 0 for false, else true.
+        - bool bordered: Whether or not the window should have a border.
 */
-void Simp_SetWindowBordered(Simp_Window* window, int bordered);
+void Simp_SetWindowBordered(Simp_Window* window, bool bordered);
 
 /*
     Returns the position and dimensions of a given window in the form of a Simp_Rect.
@@ -123,6 +125,6 @@ Simp_Rect Simp_GetWindowRect(Simp_Window* window);
 
     Returns the status of the event you would like to check.
 */
-unsigned char Simp_GetWindowEventStatus(Simp_Window* window, Simp_WindowEvent event);
+int Simp_GetWindowEventStatus(Simp_Window* window, Simp_WindowEvent event);
 
 #endif

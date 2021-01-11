@@ -1,6 +1,8 @@
 #ifndef __SIMP_H__
 #define __SIMP_H__
 
+#include <stdbool.h>
+
 #include "simp_types.h"
 #include "simp_window.h"
 #include "simp_error.h"
@@ -8,9 +10,9 @@
 /*
     Initializes Simp Engine.
 
-    Returns 1 on success or 0 on error.
+    Returns true on success or false on error.
 */
-int Simp_Init(void);
+bool Simp_Init(void);
 
 /*
     Frees up any memory allocated by Simp Engine.

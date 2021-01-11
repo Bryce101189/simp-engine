@@ -6,15 +6,15 @@
 
 // simp.h
 
-int Simp_Init(void)
+bool Simp_Init(void)
 {
-    if(SDL_Init(SDL_INIT_VIDEO) != 0)
+    if(SDL_Init(SDL_INIT_VIDEO) != false)
     {
         Simp_SetError("Failed to initialize SDL");
-        return 0;
+        return false;
     }
 
-    return 1;
+    return true;
 }
 
 void Simp_Quit(void)
@@ -39,7 +39,7 @@ Simp_Window* Simp_CreateWindow(const char* title, int width, int height)
         return NULL;
     }
 
-    window->eventStatus = calloc(1, SIMP_WINDOWEVENT_TOTAL);
+    window->eventStatus = calloc(sizeof(int), SIMP_WINDOWEVENT_TOTAL);
 
     if(window->eventStatus == NULL)
     {
@@ -63,7 +63,7 @@ Simp_Window* Simp_CreateWindowAtPosition(const char* title, int x, int y, int wi
         return NULL;
     }
 
-    window->eventStatus = calloc(1, SIMP_WINDOWEVENT_TOTAL);
+    window->eventStatus = calloc(sizeof(int), SIMP_WINDOWEVENT_TOTAL);
 
     if(window->eventStatus == NULL)
     {
@@ -114,7 +114,7 @@ void Simp_SetWindowRect(Simp_Window *window, Simp_Rect rect)
     SDL_SetWindowSize(window->sdl_window, (int)rect.width, (int)rect.height);
 }
 
-void Simp_SetWindowResizeable(Simp_Window* window, int resizeable)
+void Simp_SetWindowResizeable(Simp_Window* window, bool resizeable)
 {
     if(window == NULL)
         return;
@@ -122,7 +122,7 @@ void Simp_SetWindowResizeable(Simp_Window* window, int resizeable)
     SDL_SetWindowResizable(window->sdl_window, resizeable ? SDL_TRUE : SDL_FALSE);
 }
 
-void Simp_SetWindowFullscreen(Simp_Window* window, int fullscreen)
+void Simp_SetWindowFullscreen(Simp_Window* window, bool fullscreen)
 {
     if(window == NULL)
         return;
@@ -130,7 +130,7 @@ void Simp_SetWindowFullscreen(Simp_Window* window, int fullscreen)
     SDL_SetWindowFullscreen(window->sdl_window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 }
 
-void Simp_SetWindowBordered(Simp_Window* window, int bordered)
+void Simp_SetWindowBordered(Simp_Window* window, bool bordered)
 {
     if(window == NULL)
         return;
@@ -157,7 +157,7 @@ Simp_Rect Simp_GetWindowRect(Simp_Window* window)
     return rect;
 }
 
-unsigned char Simp_GetWindowEventStatus(Simp_Window* window, Simp_WindowEvent event)
+int Simp_GetWindowEventStatus(Simp_Window* window, Simp_WindowEvent event)
 {
     // Update events
     SDL_Event e;
@@ -185,7 +185,7 @@ unsigned char Simp_GetWindowEventStatus(Simp_Window* window, Simp_WindowEvent ev
         }
     }
 
-    unsigned char status = window->eventStatus[event];
+    int status = window->eventStatus[event];
     window->eventStatus[event] = 0;
     return status;
 }
