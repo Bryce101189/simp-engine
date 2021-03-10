@@ -66,7 +66,7 @@ void Simp_DestroyWindow(Simp_Window* window);
 void Simp_SetWindowPosition(Simp_Window* window, int x, int y);
 
 /*
-    Resized the window to a specified width and height.
+    Resizes the window to a specified width and height.
 
     Args:
         - Simp_Window* window: The window to be resized.

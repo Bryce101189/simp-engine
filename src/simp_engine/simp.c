@@ -4,27 +4,6 @@
 #include "simp.h"
 
 
-// simp.h
-
-bool Simp_Init(void)
-{
-    if(SDL_Init(SDL_INIT_VIDEO) != false)
-    {
-        Simp_SetError("Failed to initialize SDL");
-        return false;
-    }
-
-    return true;
-}
-
-void Simp_Quit(void)
-{
-    Simp_FreeErrors();
-
-    SDL_Quit();
-}
-
-
 // simp_window.h
 
 Simp_Window* Simp_CreateWindow(const char* title, int width, int height)
@@ -191,6 +170,86 @@ int Simp_GetWindowEventStatus(Simp_Window* window, Simp_WindowEvent event)
 }
 
 
+// simp_input.h
+
+static Uint8* keyState = NULL;
+static Uint8* prevKeyState = NULL;
+static int mouseX, mouseY, prevMouseX, prevMouseY;
+static int buttonMask, prevButtonMask;
+
+void Simp_PollInputs(void)
+{
+    int numKeys;
+    const Uint8* keys = SDL_GetKeyboardState(&numKeys);
+
+    for(int key = 0; key < numKeys; ++key)
+    {
+        prevKeyState[key] = keyState[key];
+        keyState[key] = keys[key];
+    }
+
+    prevMouseX = mouseX;
+    prevMouseY = mouseY;
+    prevButtonMask = buttonMask;
+
+    buttonMask = SDL_GetMouseState(&mouseX, &mouseY);
+}
+
+bool Simp_GetKey(Simp_Key key)
+{
+    if(keyState[key])
+        return true;
+
+    return false;
+}
+
+bool Simp_GetKeyDown(Simp_Key key)
+{
+    if(keyState[key] && !prevKeyState[key])
+        return true;
+
+    return false;
+}
+
+bool Simp_GetKeyUp(Simp_Key key)
+{
+    if(!keyState[key] && prevKeyState[key])
+        return true;
+    
+    return false;
+}
+
+Simp_Point Simp_GetMousePosition(void)
+{
+    Simp_Point p = { mouseX, mouseY };
+    return p;
+}
+
+bool Simp_GetMouseButton(Simp_MouseButton mouseButton)
+{
+    if(buttonMask & mouseButton)
+        return true;
+    
+    return false;
+}
+
+bool Simp_GetMouseButtonDown(Simp_MouseButton mouseButton)
+{
+    if(buttonMask & mouseButton && !(prevButtonMask & mouseButton))
+        return true;
+    
+    return false;
+}
+
+bool Simp_GetMouseButtonUp(Simp_MouseButton mouseButton)
+{
+    if(!(buttonMask & mouseButton) && prevButtonMask & mouseButton)
+        return true;
+
+    return false;
+}
+
+
 // simp_error.h
 
 typedef struct
@@ -236,4 +295,37 @@ int Simp_FreeErrors(void)
     }
 
     return i;
+}
+
+
+// simp.h
+
+bool Simp_Init(void)
+{
+    if(SDL_Init(SDL_INIT_VIDEO) != false)
+    {
+        Simp_SetError("Failed to initialize SDL");
+        return false;
+    }
+
+    keyState = calloc(SIMP_KEY_TOTAL, sizeof(Uint8));
+    prevKeyState = calloc(SIMP_KEY_TOTAL, sizeof(Uint8));
+
+    if(prevKeyState == NULL)
+    {
+        Simp_SetError("Failed to allocate memory for prevKeyState");
+        return false;
+    }
+
+    return true;
+}
+
+void Simp_Quit(void)
+{
+    Simp_FreeErrors();
+
+    free(keyState);
+    free(prevKeyState);
+
+    SDL_Quit();
 }

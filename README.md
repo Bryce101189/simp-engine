@@ -9,7 +9,7 @@ Simp Engine provides a only thin layer of abstraction over common tasks you migh
 Simp Engine is still in the early phases of development and so not all features that are planned on being added in have been added in yet. Below is a checklist of features that are at the very least planned on being added in.
 
 - [x] Window creation 
-- [ ] Input management
+- [x] Input management
 - [ ] Image rendering
 - [ ] Text rendering
 - [ ] Audio playback

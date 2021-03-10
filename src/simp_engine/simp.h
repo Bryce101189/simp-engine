@@ -5,6 +5,7 @@
 
 #include "simp_types.h"
 #include "simp_window.h"
+#include "simp_input.h"
 #include "simp_error.h"
 
 /*
