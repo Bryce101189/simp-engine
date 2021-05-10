@@ -36,6 +36,17 @@ Simp_Sprite* Simp_CreateSprite(int width, int height);
 Simp_Sprite* Simp_CreateSpriteFromImage(char* path);
 
 /*
+    Creates a sprite from a font and user defined text.
+
+    Args:
+        - Simp_Font* font: Font to use.
+        - char* text: User defined text.
+
+    Returns a valid pointer on success or NULL on error.
+*/
+Simp_Sprite* Simp_CreateSpriteFromText(Simp_Font* font, char* text);
+
+/*
     Destroys a sprite, freeing up any memory used to store it.
 
     Args:

@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdlib.h>
 
 #include "simp.h"
@@ -175,6 +176,46 @@ int Simp_GetWindowEventStatus(Simp_Window* window, Simp_WindowEvent event)
 }
 
 
+// simp_font.h
+
+Simp_Font* Simp_LoadFont(char* path, int size)
+{
+    if(size <= 0)
+    {
+        Simp_SetError("Invalid font size provided");
+        return NULL;
+    }
+
+    TTF_Font* ttf_font = TTF_OpenFont(path, size);
+
+    if(ttf_font == NULL)
+    {
+        Simp_SetError("Unable to load font");
+        return NULL;
+    }
+
+    Simp_Font* font = malloc(sizeof(Simp_Font));
+
+    font->ttf_font = ttf_font;
+    
+    Simp_Color white = { 255, 255, 255, 255 };
+    font->color = white;
+
+    return font;
+}
+
+void Simp_DestroyFont(Simp_Font* font)
+{
+    if(font == NULL)
+        return;
+
+    if(font->ttf_font != NULL)
+        TTF_CloseFont(font->ttf_font);
+
+    free(font);
+}
+
+
 // simp_sprite.h
 
 Simp_Sprite* Simp_CreateSprite(int width, int height)
@@ -225,6 +266,41 @@ Simp_Sprite* Simp_CreateSpriteFromImage(char* path)
     if(surface == NULL)
     {
         Simp_SetError("Failed to create SDL surface from image");
+        return NULL;
+    }
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(globRenderContext, surface);
+    
+    if(texture == NULL)
+    {
+        Simp_SetError("Failed to create SDL texture from SDL surface");
+        return NULL;
+    }
+
+    Simp_Sprite* sprite = malloc(sizeof(Simp_Sprite));
+    sprite->sdl_surface = surface;
+    sprite->sdl_texture = texture;
+
+    Simp_Rect src_rect = { 0, 0, surface->w, surface->h };
+    sprite->src_rect = src_rect;
+
+    sprite->position.x = 0;
+    sprite->position.y = 0;
+
+    sprite->rotation = 0;
+    sprite->scale = 1.0;
+
+    return sprite;
+}
+
+Simp_Sprite* Simp_CreateSpriteFromText(Simp_Font* font, char* text)
+{
+    SDL_Color col = { font->color.r, font->color.g, font->color.b, font->color.a };
+    SDL_Surface* surface = TTF_RenderText_Blended(font->ttf_font, text, col);
+ 
+    if(surface == NULL)
+    {
+        Simp_SetError("Failed to create SDL surface from text");
         return NULL;
     }
 
@@ -450,20 +526,30 @@ int Simp_FreeErrors(void)
 
 bool Simp_Init(void)
 {
+    // Initialize SDL2 and it's subsystems
     if(SDL_Init(SDL_INIT_VIDEO) != false)
     {
-        Simp_SetError("Failed to initialize SDL");
+        Simp_SetError("Failed to initialize SDL2");
         return false;
     }
 
+    // Initialize SDL2_image
     int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP;
 
     if(IMG_Init(imgFlags) != imgFlags)
     {
-        Simp_SetError("Failed to initialize SDL_image");
+        Simp_SetError("Failed to initialize SDL2_image");
         return false;
     }
 
+    // Initialize SDL2_ttf
+    if(TTF_Init() == -1)
+    {
+        Simp_SetError("Failed to initialize SDL2_ttf");
+        return false;
+    }
+
+    // Allocate memory for keyboard states
     keyState = calloc(SIMP_KEY_TOTAL, sizeof(Uint8));
     prevKeyState = calloc(SIMP_KEY_TOTAL, sizeof(Uint8));
 
@@ -483,6 +569,7 @@ void Simp_Quit(void)
     free(keyState);
     free(prevKeyState);
 
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 }

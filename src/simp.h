@@ -3,12 +3,13 @@
 
 #include <stdbool.h>
 
+#include "simp_error.h"
+#include "simp_font.h"
+#include "simp_input.h"
+#include "simp_render.h"
+#include "simp_sprite.h"
 #include "simp_types.h"
 #include "simp_window.h"
-#include "simp_sprite.h"
-#include "simp_render.h"
-#include "simp_input.h"
-#include "simp_error.h"
 
 /*
     Initializes Simp Engine.
