@@ -5,4 +5,4 @@
 *.out
 
 # Test code/scripts
-src/tests/
+test/

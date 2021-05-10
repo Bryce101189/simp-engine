@@ -12,4 +12,9 @@ typedef struct
     double width, height;
 } Simp_Rect;
 
+typedef struct 
+{
+    unsigned char r, g, b, a;
+} Simp_Color;
+
 #endif

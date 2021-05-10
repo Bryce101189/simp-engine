@@ -1,34 +1,12 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <stdlib.h>
 
 #include "simp.h"
 
+static SDL_Renderer* globRenderContext = NULL;
 
 // simp_window.h
-
-Simp_Window* Simp_CreateWindow(const char* title, int width, int height)
-{
-    Simp_Window* window = malloc(sizeof(Simp_Window));
-    window->sdl_window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
-    
-    if(window->sdl_window == NULL)
-    {
-        Simp_DestroyWindow(window);
-        Simp_SetError("Failed to create SDL window");
-        return NULL;
-    }
-
-    window->eventStatus = calloc(sizeof(int), SIMP_WINDOWEVENT_TOTAL);
-
-    if(window->eventStatus == NULL)
-    {
-        Simp_DestroyWindow(window);
-        Simp_SetError("Failed to reserve memory for window event storage");
-        return NULL;
-    }
-
-    return window;
-}
 
 Simp_Window* Simp_CreateWindowAtPosition(const char* title, int x, int y, int width, int height)
 {
@@ -42,6 +20,21 @@ Simp_Window* Simp_CreateWindowAtPosition(const char* title, int x, int y, int wi
         return NULL;
     }
 
+    window->sdl_renderer = SDL_CreateRenderer(window->sdl_window, -1, SDL_RENDERER_ACCELERATED);
+
+    if(window->sdl_renderer == NULL)
+    {
+        Simp_DestroyWindow(window);
+        Simp_SetError("Failed to create SDL renderer");
+        return NULL;
+    }
+
+    SDL_SetRenderDrawColor(window->sdl_renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawBlendMode(window->sdl_renderer, SDL_BLENDMODE_BLEND);  // Render opacity
+
+    if(globRenderContext == NULL)
+        globRenderContext = window->sdl_renderer;
+
     window->eventStatus = calloc(sizeof(int), SIMP_WINDOWEVENT_TOTAL);
 
     if(window->eventStatus == NULL)
@@ -51,7 +44,16 @@ Simp_Window* Simp_CreateWindowAtPosition(const char* title, int x, int y, int wi
         return NULL;
     }
 
+    window->camera.position.x = 0;
+    window->camera.position.y = 0;
+    window->camera.zoom = 1.0;
+
     return window;
+}
+
+Simp_Window* Simp_CreateWindow(const char* title, int width, int height)
+{
+    return Simp_CreateWindowAtPosition(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height);
 }
 
 void Simp_DestroyWindow(Simp_Window* window)
@@ -62,6 +64,9 @@ void Simp_DestroyWindow(Simp_Window* window)
     if(window->sdl_window != NULL)
         SDL_DestroyWindow(window->sdl_window);
     
+    if(window->sdl_renderer != NULL)
+        SDL_DestroyRenderer(window->sdl_renderer);
+
     if(window->eventStatus != NULL)
         free(window->eventStatus);
 
@@ -167,6 +172,149 @@ int Simp_GetWindowEventStatus(Simp_Window* window, Simp_WindowEvent event)
     int status = window->eventStatus[event];
     window->eventStatus[event] = 0;
     return status;
+}
+
+
+// simp_sprite.h
+
+Simp_Sprite* Simp_CreateSprite(int width, int height)
+{
+    if(width <= 0 || height <= 0)
+    {
+        Simp_SetError("Invalid dimensions provided");
+        return NULL;
+    }
+
+    SDL_Surface* surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+
+    if(surface == NULL)
+    {
+        Simp_SetError("Failed to create SDL surface");
+        return NULL;
+    }
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(globRenderContext, surface);
+
+    if(texture == NULL)
+    {
+        Simp_SetError("Failed to create SDL texture from SDL surface");
+        return NULL;
+    }
+
+    Simp_Sprite* sprite = malloc(sizeof(Simp_Sprite));
+
+    sprite->sdl_surface = surface;
+    sprite->sdl_texture = texture;
+
+    Simp_Rect src_rect = { 0, 0, surface->w, surface->h };
+    sprite->src_rect = src_rect;
+
+    sprite->position.x = 0;
+    sprite->position.y = 0;
+
+    sprite->rotation = 0;
+    sprite->scale = 1.0;
+
+    return sprite;
+}
+
+Simp_Sprite* Simp_CreateSpriteFromImage(char* path)
+{
+    SDL_Surface* surface = IMG_Load(path);
+ 
+    if(surface == NULL)
+    {
+        Simp_SetError("Failed to create SDL surface from image");
+        return NULL;
+    }
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(globRenderContext, surface);
+    
+    if(texture == NULL)
+    {
+        Simp_SetError("Failed to create SDL texture from SDL surface");
+        return NULL;
+    }
+
+    Simp_Sprite* sprite = malloc(sizeof(Simp_Sprite));
+    sprite->sdl_surface = surface;
+    sprite->sdl_texture = texture;
+
+    Simp_Rect src_rect = { 0, 0, surface->w, surface->h };
+    sprite->src_rect = src_rect;
+
+    sprite->position.x = 0;
+    sprite->position.y = 0;
+
+    sprite->rotation = 0;
+    sprite->scale = 1.0;
+
+    return sprite;
+}
+
+void Simp_BlitSprite(Simp_Sprite* src, Simp_Rect src_rect, Simp_Sprite* dest, Simp_Rect dest_rect)
+{
+    SDL_Rect sdl_src_rect = { src_rect.x, src_rect.y, src_rect.width, src_rect.height };
+    SDL_Rect sdl_dest_rect = { dest_rect.x, dest_rect.y, dest_rect.width, dest_rect.height };
+
+    SDL_BlitSurface(src->sdl_surface, &sdl_src_rect, dest->sdl_surface, &sdl_dest_rect);
+    dest->sdl_texture = SDL_CreateTextureFromSurface(globRenderContext, dest->sdl_surface);
+}
+
+void Simp_DestroySprite(Simp_Sprite* sprite)
+{
+    if(sprite == NULL)
+        return;
+
+    if(sprite->sdl_surface != NULL)
+        SDL_FreeSurface(sprite->sdl_surface);
+
+    if(sprite->sdl_texture != NULL)
+        SDL_DestroyTexture(sprite->sdl_texture);
+
+    free(sprite);
+}
+
+
+// simp_render.h
+
+void Simp_SetClearColor(Simp_Window* window, Simp_Color color)
+{
+    SDL_SetRenderDrawColor(window->sdl_renderer, color.r, color.g, color.b, color.a);
+}
+
+void Simp_ClearScreen(Simp_Window* window)
+{
+    SDL_RenderClear(window->sdl_renderer);
+}
+
+void Simp_UpdateScreen(Simp_Window* window)
+{
+    SDL_RenderPresent(window->sdl_renderer);
+}
+
+void Simp_DrawSprite(Simp_Window* window, Simp_Sprite* sprite)
+{    
+    const int spriteWidth = sprite->src_rect.width * sprite->scale * window->camera.zoom;
+    const int spriteHeight = sprite->src_rect.height * sprite->scale * window->camera.zoom;
+    
+    const int xPos = (sprite->position.x - window->camera.position.x)
+        + (Simp_GetWindowRect(window).width / 2)
+        - (spriteWidth / 2);
+    
+    const int yPos = (-sprite->position.y - -window->camera.position.y)
+        + (Simp_GetWindowRect(window).height / 2)
+        - (spriteHeight / 2);
+
+    SDL_Rect src_rect = 
+    { 
+        sprite->src_rect.x, sprite->src_rect.y,
+        sprite->src_rect.width, sprite->src_rect.height
+    };
+
+    SDL_Rect dst_rect = { xPos, yPos, spriteWidth, spriteHeight };
+
+    SDL_RenderCopyEx(window->sdl_renderer, sprite->sdl_texture, &src_rect, &dst_rect, sprite->rotation, NULL, SDL_FLIP_NONE);
 }
 
 
@@ -308,6 +456,14 @@ bool Simp_Init(void)
         return false;
     }
 
+    int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP;
+
+    if(IMG_Init(imgFlags) != imgFlags)
+    {
+        Simp_SetError("Failed to initialize SDL_image");
+        return false;
+    }
+
     keyState = calloc(SIMP_KEY_TOTAL, sizeof(Uint8));
     prevKeyState = calloc(SIMP_KEY_TOTAL, sizeof(Uint8));
 
@@ -327,5 +483,6 @@ void Simp_Quit(void)
     free(keyState);
     free(prevKeyState);
 
+    IMG_Quit();
     SDL_Quit();
 }
