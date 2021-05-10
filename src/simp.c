@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include "simp.h"
 
@@ -182,7 +183,7 @@ Simp_Font* Simp_LoadFont(char* path, int size)
 {
     if(size <= 0)
     {
-        Simp_SetError("Invalid font size provided");
+        Simp_SetError("Invalid font size of %d provided", size);
         return NULL;
     }
 
@@ -190,7 +191,7 @@ Simp_Font* Simp_LoadFont(char* path, int size)
 
     if(ttf_font == NULL)
     {
-        Simp_SetError("Unable to load font");
+        Simp_SetError("Unable to load font '%s'", path);
         return NULL;
     }
 
@@ -222,7 +223,7 @@ Simp_Sprite* Simp_CreateSprite(int width, int height)
 {
     if(width <= 0 || height <= 0)
     {
-        Simp_SetError("Invalid dimensions provided");
+        Simp_SetError("Invalid dimensions of %dx%d provided", width, height);
         return NULL;
     }
 
@@ -265,7 +266,7 @@ Simp_Sprite* Simp_CreateSpriteFromImage(char* path)
  
     if(surface == NULL)
     {
-        Simp_SetError("Failed to create SDL surface from image");
+        Simp_SetError("Failed to create SDL surface from image at '%s'", path);
         return NULL;
     }
 
@@ -300,7 +301,7 @@ Simp_Sprite* Simp_CreateSpriteFromText(Simp_Font* font, char* text)
  
     if(surface == NULL)
     {
-        Simp_SetError("Failed to create SDL surface from text");
+        Simp_SetError("Failed to create SDL surface from text '%s'", text);
         return NULL;
     }
 
@@ -486,11 +487,18 @@ typedef struct
 
 static LinkedString* errors = NULL;
 
-void Simp_SetError(const char* errorMessage)
+void Simp_SetError(const char* format, ...)
 {
+    va_list args;
+    va_start(args, format);
+    
     LinkedString* newError = malloc(sizeof(LinkedString));
 
-    newError->string = errorMessage;
+    char buffer[0x1000];
+    int len = vsprintf(buffer, format, args);
+    buffer[len] = '\0';
+
+    newError->string = buffer;
     newError->next = errors;
     
     errors = newError;

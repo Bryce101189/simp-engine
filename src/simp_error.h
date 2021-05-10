@@ -7,7 +7,7 @@
     Args:
         - const char* errorMessage: Message to push onto the error stack.
 */
-void Simp_SetError(const char* errorMessage);
+void Simp_SetError(const char* format, ...);
 
 /*
     Pops an error message off of the error stack and returns it.
