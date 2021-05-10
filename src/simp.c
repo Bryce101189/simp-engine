@@ -374,12 +374,14 @@ void Simp_DrawSprite(Simp_Window* window, Simp_Sprite* sprite)
     const int spriteWidth = sprite->src_rect.width * sprite->scale * window->camera.zoom;
     const int spriteHeight = sprite->src_rect.height * sprite->scale * window->camera.zoom;
     
-    const int xPos = (sprite->position.x - window->camera.position.x)
+    const int xPos = (sprite->position.x * window->camera.zoom)
         + (Simp_GetWindowRect(window).width / 2)
+        - (window->camera.position.x)
         - (spriteWidth / 2);
     
-    const int yPos = (-sprite->position.y - -window->camera.position.y)
+    const int yPos = (-sprite->position.y * window->camera.zoom)
         + (Simp_GetWindowRect(window).height / 2)
+        - (-window->camera.position.y)
         - (spriteHeight / 2);
 
     SDL_Rect src_rect = 
