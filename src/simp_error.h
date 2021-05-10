@@ -1,5 +1,5 @@
-#ifndef __SIMP_ERROR_H__
-#define __SIMP_ERROR_H__
+#ifndef _SIMP_ERROR_H
+#define _SIMP_ERROR_H
 
 /*
     Pushes an error message onto the error stack.
@@ -23,4 +23,4 @@ const char* Simp_GetError(void);
 */
 int Simp_FreeErrors(void);
 
-#endif
+#endif // _SIMP_ERROR_H

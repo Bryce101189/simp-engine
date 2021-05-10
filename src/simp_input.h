@@ -1,5 +1,5 @@
-#ifndef __INPUT_H__
-#define __INPUT_H__
+#ifndef _SIMP_INPUT_H
+#define _SIMP_INPUT_H
 
 typedef enum
 {
@@ -346,4 +346,4 @@ bool Simp_GetMouseButtonDown(Simp_MouseButton mouseButton);
 */
 bool Simp_GetMouseButtonUp(Simp_MouseButton mouseButton);
 
-#endif
+#endif // _SIMP_INPUT_H

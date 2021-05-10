@@ -1,5 +1,5 @@
-#ifndef __SIMP_WINDOW_H__
-#define __SIMP_WINDOW_H__
+#ifndef _SIMP_WINDOW_H
+#define _SIMP_WINDOW_H
 
 #include <stdbool.h>
 
@@ -136,4 +136,4 @@ Simp_Rect Simp_GetWindowRect(Simp_Window* window);
 */
 int Simp_GetWindowEventStatus(Simp_Window* window, Simp_WindowEvent event);
 
-#endif
+#endif // _SIMP_WINDOW_H

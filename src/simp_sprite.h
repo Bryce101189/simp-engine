@@ -1,5 +1,5 @@
-#ifndef __SIMP_SPRITE_H__
-#define __SIMP_SPRITE_H__
+#ifndef _SIMP_SPRITE_H
+#define _SIMP_SPRITE_H
 
 #include "simp_types.h"
 
@@ -67,4 +67,4 @@ void Simp_DestroySprite(Simp_Sprite* sprite);
 */
 void Simp_BlitSprite(Simp_Sprite* src, Simp_Rect src_rect, Simp_Sprite* dest, Simp_Rect dest_rect);
 
-#endif
+#endif // _SIMP_SPRITE_H

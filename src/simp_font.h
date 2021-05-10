@@ -1,5 +1,5 @@
-#ifndef __SIMP_FONT_H__
-#define __SIMP_FONT_H__
+#ifndef _SIMP_FONT_H
+#define _SIMP_FONT_H
 
 #include "simp_types.h"
 
@@ -28,4 +28,4 @@ Simp_Font* Simp_LoadFont(char* path, int size);
 */
 void Simp_DestroyFont(Simp_Font* font);
 
-#endif
+#endif // _SIMP_FONT_H

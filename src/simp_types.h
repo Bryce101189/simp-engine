@@ -1,5 +1,5 @@
-#ifndef __SIMP_TYPES_H__
-#define __SIMP_TYPES_H__
+#ifndef _SIMP_TYPES_H
+#define _SIMP_TYPES_H
 
 typedef struct
 {
@@ -17,4 +17,4 @@ typedef struct
     unsigned char r, g, b, a;
 } Simp_Color;
 
-#endif
+#endif // _SIMP_TYPES_H

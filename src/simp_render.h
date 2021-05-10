@@ -1,5 +1,5 @@
-#ifndef __SIMP_RENDER_H__
-#define __SIMP_RENDER_H__
+#ifndef _SIMP_RENDER_H
+#define _SIMP_RENDER_H
 
 #include "simp_window.h"
 #include "simp_sprite.h"
@@ -39,4 +39,4 @@ void Simp_UpdateScreen(Simp_Window* window);
 */
 void Simp_DrawSprite(Simp_Window* window, Simp_Sprite* sprite);
 
-#endif
+#endif // _SIMP_RENDER_H

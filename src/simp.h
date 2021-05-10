@@ -1,5 +1,5 @@
-#ifndef __SIMP_H__
-#define __SIMP_H__
+#ifndef _SIMP_H
+#define _SIMP_H
 
 #include <stdbool.h>
 
@@ -23,4 +23,4 @@ bool Simp_Init(void);
 */
 void Simp_Quit(void);
 
-#endif
+#endif // _SIMP_H
