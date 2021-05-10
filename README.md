@@ -11,7 +11,7 @@ Not all features that are planned on being implemented have been added yet. Here
 - [x] Window creation
 - [x] Input management
 - [x] Image rendering
-- [ ] Text rendering
+- [x] Text rendering
 - [ ] Audio playback
 - [ ] Immediate mode GUI
 
