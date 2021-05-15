@@ -477,6 +477,25 @@ bool Simp_GetMouseButtonUp(Simp_MouseButton mouseButton)
 }
 
 
+// simp_time.h
+
+long Simp_GetMillisecondsElapsed(void) {
+    return SDL_GetTicks();
+}
+
+long Simp_GetSecondsElapsed(void) {
+    return SDL_GetTicks() / 1000;
+}
+
+void Simp_DelayMilliseconds(long milliseconds) {
+    SDL_Delay(milliseconds);
+}
+
+void Simp_DelaySeconds(long seconds) {
+    SDL_Delay(seconds * 1000);
+}
+
+
 // simp_error.h
 
 typedef struct

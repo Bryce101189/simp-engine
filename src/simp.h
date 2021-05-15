@@ -8,6 +8,7 @@
 #include "simp_input.h"
 #include "simp_render.h"
 #include "simp_sprite.h"
+#include "simp_time.h"
 #include "simp_types.h"
 #include "simp_window.h"
 
